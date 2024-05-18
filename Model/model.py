@@ -10,17 +10,16 @@ mydb = mysql.connector.connect(
 class ProductModel:
     def __init__(self):
         self.cursor = mydb.cursor()
-        self.products = []
-
-    
-    def list_products(self):
+        
+    def search_products(self):
+        products = []
         sql = 'select * from loja'
         self.cursor.execute(sql)
         row = self.cursor.fetchall()
         for product in row:
-            self.products.append(product)
+            products.append(product)
 
-        return self.products
+        return products
     
     def add_product(self, nome, preco, imagem, estoque):
         sql = 'insert into loja(nome, preco, imagem, estoque) values (%(nome)s, %(preco)s, %(imagem)s, %(estoque)s)'
@@ -39,9 +38,12 @@ class ProductModel:
 
 
     def delete_product(self, id):
-        sql = 'delete from loja where id_produto = %s'
+        sql = 'delete from loja where id_produto = %(id)s'
+        data = {
+            'id': id
+        }
 
-        self.cursor.execute(sql, id)
+        self.cursor.execute(sql, data)
         mydb.commit()
 
 
@@ -59,3 +61,19 @@ class ProductModel:
             cursor.execute(sql, data)
 
         mydb.commit()
+
+    
+    def search_product_by_name(self, name):
+        product_by_name = []
+        sql = 'select * from loja where nome = %(name)s'
+        data = {
+            'name': name
+        }
+
+        self.cursor.execute(sql, data)
+        row = self.cursor.fetchall()
+        for product in row:
+            product_by_name.append(product)
+
+
+        return product_by_name

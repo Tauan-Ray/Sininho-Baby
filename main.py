@@ -11,8 +11,8 @@ def main():
     root.resizable(False, False)
 
     model = m.ProductModel()
-    view = v.View(root)
-    controller = c.Controller(root, model, view)
+    view = v.View(root=root)
+    controller = c.Controller(root=root, model=model, view=view)
 
     controller.initialize()
     
