@@ -20,19 +20,13 @@ class ProductModel:
             products.append(product)
 
         return products
+        
     
-    def add_product(self, nome, preco, imagem, estoque):
+    def add_product(self, product_data):
         sql = 'insert into loja(nome, preco, imagem, estoque) values (%(nome)s, %(preco)s, %(imagem)s, %(estoque)s)'
 
-        data = {
-            'nome': nome,
-            'preco': preco,
-            'imagem': imagem,
-            'estoque': estoque
-        }
-
         with mydb.cursor() as cursor:
-            cursor.execute(sql, data)
+            cursor.execute(sql, product_data)
 
         mydb.commit()
 
