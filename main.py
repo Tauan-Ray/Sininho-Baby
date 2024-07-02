@@ -3,6 +3,7 @@ from Model import model as m
 from Controller import controller as c
 from tkinter import *
 
+print('teste')
 
 def main():
     root = Tk()
