@@ -32,7 +32,7 @@ class ProductModel:
     def create_table(self):
         sql = """
         create table if not exists products(
-            id_product int auto_increment not null primary key,
+            product_code varchar(8) not null primary key,
             name varchar(200) not null,
             price double not null,
             image tinytext,
@@ -55,7 +55,7 @@ class ProductModel:
         
     
     def add_product(self, product_data):
-        sql = 'insert into products(name, price, image, stock) values (%(name)s, %(price)s, %(image)s, %(stock)s)'
+        sql = 'insert into products(product_code, name, price, image, stock) values (%(code)s, %(name)s, %(price)s, %(image)s, %(stock)s)'
 
         with self.mydb.cursor() as cursor:
             cursor.execute(sql, product_data)
@@ -63,24 +63,24 @@ class ProductModel:
         self.mydb.commit()
 
 
-    def delete_product(self, id):
-        sql = 'delete from products where id_product = %(id)s'
+    def delete_product(self, code_product):
+        sql = 'delete from products where code_product = %(code_product)s'
         data = {
-            'id': id
+            'code_product': code_product
         }
 
         self.cursor.execute(sql, data)
         self.mydb.commit()
 
 
-    def update_product(self, nome, preco, imagem, estoque):
-        sql = 'update loja set name = %(nome)s, price = %(preco)s, image = %(imagem)s, stock = %(estoque)s'
+    def update_product(self, code, name, price, image, stock):
+        sql = 'update loja set code = %(code)s, name = %(name)s, price = %(price)s, image = %(image)s, stock = %(stock)s'
 
         data = {
-            'nome': nome,
-            'preco': preco,
-            'imagem': imagem,
-            'estoque': estoque
+            'nome': name,
+            'preco': price,
+            'imagem': image,
+            'estoque': stock
         }
 
         with self.mydb.cursor() as cursor:

@@ -17,9 +17,14 @@ class Controller():
     def product_by_name(self, name):
         return self.model.search_product_by_name(name)
     
-    def register_product_database(self, product_name, price_product, stock_product, image_product = ''):
+    def register_product_database(self, product_code, product_name, price_product, stock_product, image_product = None):
         try:
-            price_product = float(price_product)
+            price_product_temp = str(price_product)
+            if ',' in price_product_temp:
+                price_product_temp = price_product_temp.replace(',', '.')
+
+            
+            price_product = float(price_product_temp)
             stock_product = int(stock_product)
 
 
@@ -30,6 +35,7 @@ class Controller():
 
 
         data = {
+            'code': product_code,
             'name': product_name,
             'price': price_product,
             'image': image_product,
@@ -48,7 +54,7 @@ class Controller():
         image_path = self.view.select_image()
 
         if image_path:
-            self.view.display_image(frame=frame, image_path=image_path, x=70, y=230)
+            self.view.display_image(frame=frame, image_path=image_path, x=70, y=234)
 
         else:
             messagebox.showwarning('AVISO!!!',

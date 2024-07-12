@@ -158,7 +158,7 @@ class View:
                 self.display_image(frame=frame, image_path=product[0][3], x=100, y=250)
 
 
-            except IsADirectoryError:
+            except AttributeError:
                 pass
 
     
@@ -172,51 +172,70 @@ class View:
         frame_register_right.place(x=500, y=0)
 
 
+        product_code = Label(frame_register_left, text='Código do produto:', width=15, height=1, anchor=CENTER, font=('Arial 14'), bg='white',fg='black')
+        product_code.place(x=7, y=2)
+
+        self.entry_product_code = Entry(frame_register_left, width=30, font=('Arial 13'), justify='left', relief='raised', borderwidth=2)
+        self.entry_product_code.place(x=10, y=25)
+
+
         product_name = Label(frame_register_left, text='Nome do produto:', width=15, height=1, anchor=CENTER, font=('Arial 14'), bg='white',fg='black')
-        product_name.place(x=7, y=2)
+        product_name.place(x=7, y=60)
 
         self.entry_product_name = Entry(frame_register_left, width=30, font=('Arial 13'), justify='left', relief='raised', borderwidth=2)
-        self.entry_product_name.place(x=10, y=25)
+        self.entry_product_name.place(x=10, y=83)
 
 
         price_product = Label(frame_register_left, text='Preço:', width=6, height=1, anchor=CENTER, font=('Arial 14'), bg='white',fg='black')
-        price_product.place(x=7, y=60)
+        price_product.place(x=7, y=118)
 
         self.entry_price_product = Entry(frame_register_left, width=30, font=('Arial 13'), justify='left', relief='raised', borderwidth=2)
-        self.entry_price_product.place(x=10, y=83)
+        self.entry_price_product.place(x=10, y=141)
 
 
         stock_product = Label(frame_register_left, text='Estoque:', width=8, height=1, anchor=CENTER, font=('Arial 14'), bg='white',fg='black')
-        stock_product.place(x=6, y=118)
+        stock_product.place(x=6, y=176)
 
         self.entry_stock_product = Entry(frame_register_left, width=30, font=('Arial 13'), justify='left', relief='raised', borderwidth=2)
-        self.entry_stock_product.place(x=10, y=141)
+        self.entry_stock_product.place(x=10, y=199)
 
         
-        add_image_button = Button(frame_register_left, text='Adicionar imagem', width=15, height=2, anchor='center', font=('Ivy 11 bold'), relief='raised', overrelief='sunken', bg='#0080c0', fg='black', borderwidth=2, command=lambda: self.controller.choice_image(frame=frame_register_left))
-        add_image_button.place(x=117, y=444)
+        add_image_button = Button(frame_register_left, text='Adicionar imagem', width=15, height=1, pady=7 ,anchor='center', font=('Ivy 11'), relief='raised', overrelief='sunken', bg='#0080c0', fg='black', borderwidth=2, command=lambda: self.controller.choice_image(frame=frame_register_left))
+        add_image_button.place(x=108, y=444)
 
-        register_product_button = Button(frame_register_left, text='Cadastrar produto', width=13, height=1, anchor='center', font=('Ivy 11 bold'), relief='raised', overrelief='sunken', bg='#00ff40', fg='black', borderwidth=2, command=self.register_product)
+        register_product_button = Button(frame_register_left, text='Cadastrar produto', width=13, height=1, anchor='center', font=('Ivy 11'), relief='raised', overrelief='sunken', bg='#00ff40', fg='black', borderwidth=2, command=self.register_product)
         register_product_button.place(x=330, y=16)
 
 
     
     def register_product(self):
+        product_code = self.entry_product_code.get()
         product_name = self.entry_product_name.get()
         price_product = self.entry_price_product.get()
         stock_product = self.entry_stock_product.get()
 
-        if not product_name or not price_product or not stock_product:
-            messagebox.showerror('ERROR!!', 'Preencha todos os campos!')
+        if not product_code or not product_name or not price_product or not stock_product:
+            messagebox.showerror('ERROR!!', 
+                                'Preencha todos os campos!')
             return
         
 
-        try:
-            self.controller.register_product_database(product_name=product_name, price_product=price_product, stock_product=stock_product, image_product=self.image_path)
-  
-
-        except AttributeError:
-            self.controller.register_product_database(product_name=product_name, price_product=price_product, stock_product=stock_product)
+        if hasattr(self, 'image_path'):
+            self.controller.register_product_database(
+                product_code=product_code, 
+                product_name=product_name, 
+                price_product=price_product, 
+                stock_product=stock_product, 
+                image_product=self.image_path
+        )
+            
+        else:
+            self.controller.register_product_database(
+                product_code=product_code, 
+                product_name=product_name, 
+                price_product=price_product, 
+                stock_product=stock_product
+            )
 
 
     def select_image(self):
@@ -236,6 +255,7 @@ class View:
 
     
     def clear_fields(self):
+        self.entry_product_code.delete(0, END)
         self.entry_product_name.delete(0, END)
         self.entry_price_product.delete(0, END)
         self.entry_stock_product.delete(0, END)
