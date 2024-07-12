@@ -30,10 +30,10 @@ class Controller():
 
 
         data = {
-            'nome': product_name,
-            'preco': price_product,
-            'imagem': image_product,
-            'estoque': stock_product
+            'name': product_name,
+            'price': price_product,
+            'image': image_product,
+            'stock': stock_product
         }
         
 
