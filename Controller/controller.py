@@ -8,16 +8,20 @@ class Controller():
         self.model = model
         self.view = view
 
+
     def initialize(self):
         self.view.create_widgets()
+
 
     def list_products(self):
         return self.model.search_products()
     
-    def product_by_name(self, name):
-        return self.model.search_product_by_name(name)
     
-    def register_product_database(self, product_code, product_name, price_product, stock_product, image_product = None):
+    def product_by_code(self, code):
+        return self.model.search_product_by_code(code)
+    
+    
+    def product_data(self, product_code, product_name, price_product, stock_product, image_product = None):
         try:
             price_product_temp = str(price_product)
             if ',' in price_product_temp:
@@ -34,20 +38,46 @@ class Controller():
             return
 
 
-        data = {
-            'code': product_code,
+        return {
+            'product_code': product_code,
             'name': product_name,
             'price': price_product,
             'image': image_product,
             'stock': stock_product
         }
+    
+
+    def register_product_database(self, product_code, product_name, price_product, stock_product, image_product=None):
+        product_data = self.product_data(product_code, product_name, price_product, stock_product, image_product)
         
 
-        self.model.add_product(product_data=data)
+        self.model.add_product(product_data=product_data)
         messagebox.showinfo('Sucesso!!!',
                             'Produto cadastrado com sucesso.')
-
         self.view.clear_fields()
+
+    
+    def update_product_database(self, code_product, name_product, price_product, stock_product, image_product=None):
+        product_data = self.product_data(code_product, name_product, price_product, stock_product, image_product)
+        product_data['old_code'] = self.view.old_code
+        
+
+        self.model.update_product(product_data=product_data)
+        messagebox.showinfo('Sucesso!!!',
+                            'Produto atualizado com sucesso.')
+        
+        self.view.clear_fields()
+        self.view.screen_products()
+
+
+    def delete_product_database(self, response, code):
+        if response:
+            self.model.delete_product(code = code)
+            messagebox.showinfo('Sucesso!!!',
+                                'Produto deletado com sucesso!')
+            
+            self.view.update(self.view.list_products)
+
 
 
     def choice_image(self,frame):

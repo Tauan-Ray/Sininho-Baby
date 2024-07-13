@@ -55,7 +55,7 @@ class ProductModel:
         
     
     def add_product(self, product_data):
-        sql = 'insert into products(product_code, name, price, image, stock) values (%(code)s, %(name)s, %(price)s, %(image)s, %(stock)s)'
+        sql = 'insert into products(product_code, name, price, image, stock) values (%(product_code)s, %(name)s, %(price)s, %(image)s, %(stock)s)'
 
         with self.mydb.cursor() as cursor:
             cursor.execute(sql, product_data)
@@ -63,43 +63,36 @@ class ProductModel:
         self.mydb.commit()
 
 
-    def delete_product(self, code_product):
-        sql = 'delete from products where code_product = %(code_product)s'
+    def delete_product(self, code):
+        sql = 'delete from products where product_code = %(product_code)s'
         data = {
-            'code_product': code_product
+            'product_code': code
         }
 
         self.cursor.execute(sql, data)
         self.mydb.commit()
 
 
-    def update_product(self, code, name, price, image, stock):
-        sql = 'update loja set code = %(code)s, name = %(name)s, price = %(price)s, image = %(image)s, stock = %(stock)s'
-
-        data = {
-            'nome': name,
-            'preco': price,
-            'imagem': image,
-            'estoque': stock
-        }
+    def update_product(self, product_data):
+        sql = 'update products set product_code = %(product_code)s, name = %(name)s, price = %(price)s, image = %(image)s, stock = %(stock)s WHERE product_code = %(old_code)s'
 
         with self.mydb.cursor() as cursor:
-            cursor.execute(sql, data)
+            cursor.execute(sql, product_data)
 
         self.mydb.commit()
 
     
-    def search_product_by_name(self, name):
-        product_by_name = []
-        sql = 'select * from products where name = %(name)s'
+    def search_product_by_code(self, code):
+        product_by_code = []
+        sql = 'select * from products where product_code = %(product_code)s'
         data = {
-            'name': name
+            'product_code': code
         }
 
         self.cursor.execute(sql, data)
         row = self.cursor.fetchall()
         for product in row:
-            product_by_name.append(product)
+            product_by_code.append(product)
 
 
-        return product_by_name
+        return product_by_code
