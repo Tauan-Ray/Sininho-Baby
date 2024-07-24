@@ -216,8 +216,8 @@ class View:
         self.entry_stock_product.place(x=10, y=199)
 
         
-        add_image_button = Button(frame, text='Adicionar imagem', width=15, height=1, pady=7 ,anchor='center', font=('Ivy 11'), relief='raised', overrelief='sunken', bg='#FF7F50', fg='black', borderwidth=2, command=lambda: self.controller.choice_image(frame=frame))
-        add_image_button.place(x=108, y=444)
+        self.add_image_button = Button(frame, text='Adicionar imagem', width=15, height=1, pady=7 ,anchor='center', font=('Ivy 11'), relief='raised', overrelief='sunken', bg='#FF7F50', fg='black', borderwidth=2, command=lambda: self.controller.choice_image(frame=frame))
+        self.add_image_button.place(x=108, y=444)
 
         self.register_product_button = Button(frame, text='Cadastrar produto', width=13, height=1, anchor='center', font=('Ivy 11'), relief='raised', overrelief='sunken', bg='#2ECC71', fg='black', borderwidth=2, command=self.register_product)
         self.register_product_button.place(x=330, y=16)

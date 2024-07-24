@@ -50,10 +50,7 @@ class Controller():
     def register_product_database(self, product_code, product_name, price_product, stock_product, image_product=None):
         product_data = self.product_data(product_code, product_name, price_product, stock_product, image_product)
         
-
         self.model.add_product(product_data=product_data)
-        messagebox.showinfo('Sucesso!!!',
-                            'Produto cadastrado com sucesso.')
         self.view.clear_fields()
 
     
@@ -63,8 +60,6 @@ class Controller():
         
 
         self.model.update_product(product_data=product_data)
-        messagebox.showinfo('Sucesso!!!',
-                            'Produto atualizado com sucesso.')
         
         self.view.clear_fields()
         self.view.screen_products()
@@ -81,6 +76,12 @@ class Controller():
 
 
     def choice_image(self,frame):
+        try:
+            self.view.image_label.destroy()
+
+        except AttributeError:    
+            pass
+        
         image_path = self.view.select_image()
 
         if image_path:

@@ -1,4 +1,6 @@
 import mysql.connector
+from tkinter import messagebox
+from View import view
 
 class ProductModel:
     def __init__(self):
@@ -24,6 +26,9 @@ class ProductModel:
         self.cursor = self.mydb.cursor()
 
         self.create_table()
+
+        self.view = view
+
 
     def create_database(self):
         self.temp_cursor.execute('create database if not exists Sininho_Baby')
@@ -58,9 +63,18 @@ class ProductModel:
         sql = 'insert into products(product_code, name, price, image, stock) values (%(product_code)s, %(name)s, %(price)s, %(image)s, %(stock)s)'
 
         with self.mydb.cursor() as cursor:
-            cursor.execute(sql, product_data)
+            try:
+                cursor.execute(sql, product_data)
+
+            except mysql.connector.errors.IntegrityError:
+                messagebox.showerror("Erro!!!",
+                                    "Produto com código inserido ja existente.")
+                
+                return
 
         self.mydb.commit()
+        messagebox.showinfo('Sucesso!!!',
+                            'Produto cadastrado com sucesso.')
 
 
     def delete_product(self, code):
@@ -77,9 +91,18 @@ class ProductModel:
         sql = 'update products set product_code = %(product_code)s, name = %(name)s, price = %(price)s, image = %(image)s, stock = %(stock)s WHERE product_code = %(old_code)s'
 
         with self.mydb.cursor() as cursor:
-            cursor.execute(sql, product_data)
+            try:
+                cursor.execute(sql, product_data)
+
+            except mysql.connector.errors.IntegrityError:
+                messagebox.showerror("Erro!!!",
+                                    "Produto com código inserido ja existente.")
+                
+                return
 
         self.mydb.commit()
+        messagebox.showinfo('Sucesso!!!',
+                            'Produto atualizado com sucesso.')
 
     
     def search_product_by_code(self, code):
