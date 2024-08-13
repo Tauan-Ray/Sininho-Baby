@@ -1,5 +1,4 @@
 import mysql.connector
-from tkinter import messagebox
 from View import view
 
 class ProductModel:
@@ -57,6 +56,30 @@ class ProductModel:
             products.append(product)
 
         return products
+    
+
+    def product_data(self, product_code, product_name, price_product, stock_product, image_product = None):
+        try:
+            price_product_temp = str(price_product)
+            if ',' in price_product_temp:
+                price_product_temp = price_product_temp.replace(',', '.')
+
+            
+            price_product = float(price_product_temp)
+            stock_product = int(stock_product)
+
+
+        except ValueError:
+            raise ValueError('Campo preço ou estoque com valores inválidos!')
+
+
+        return {
+            'product_code': product_code,
+            'name': product_name,
+            'price': price_product,
+            'image': image_product,
+            'stock': stock_product
+        }
         
     
     def add_product(self, product_data):
@@ -67,14 +90,10 @@ class ProductModel:
                 cursor.execute(sql, product_data)
 
             except mysql.connector.errors.IntegrityError:
-                messagebox.showerror("Erro!!!",
-                                    "Produto com código inserido ja existente.")
+                raise ValueError("Produto com código inserido ja existente.")
                 
-                return
 
         self.mydb.commit()
-        messagebox.showinfo('Sucesso!!!',
-                            'Produto cadastrado com sucesso.')
 
 
     def delete_product(self, code):
@@ -95,14 +114,9 @@ class ProductModel:
                 cursor.execute(sql, product_data)
 
             except mysql.connector.errors.IntegrityError:
-                messagebox.showerror("Erro!!!",
-                                    "Produto com código inserido ja existente.")
-                
-                return
+                raise ValueError("Produto com código inserido ja existente.")
 
         self.mydb.commit()
-        messagebox.showinfo('Sucesso!!!',
-                            'Produto atualizado com sucesso.')
 
     
     def search_product_by_code(self, code):
