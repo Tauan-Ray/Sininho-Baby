@@ -124,7 +124,13 @@ class View:
             'Courier 13'), width=49, height=28, bg='white', fg='black')
         self.list_products.place(x=2, y=0)
         self.update(list=self.list_products, screen_product=True)
-        
+
+        self.search_bar_entry = Entry(self.frame_product_right, width=30, font=('Arial 13'), justify='left', relief='raised', borderwidth=2)
+        self.search_bar_entry.place(x=5, y=5)
+
+
+        search_bar_button = Button(self.frame_product_right, text='Buscar produto', width=10, height=1, pady=3, anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#D3D3D3', fg='black', borderwidth=2, command=self.search_product)
+        search_bar_button.place(x=15, y=35)
 
         show_product_button = Button(self.frame_product_right, text='Exibir produto', width=15, height=1, pady=5, anchor='center', font=(
         'Ivy 10 '), relief='raised', overrelief='sunken', bg='#007bff', fg='black', borderwidth=2, command=lambda: self.show_infos(list=self.list_products, frame=self.frame_product_right))
@@ -137,12 +143,23 @@ class View:
         delete_product_button = Button(self.frame_product_right, text='Deletar produto', width=15, height=1, pady=5, anchor='center', font=(
         'Ivy 10 '), relief='raised', overrelief='sunken', bg='#fa2d4c', fg='black', borderwidth=2, command=self.delete_product)
         delete_product_button.place(x=339, y= 217)
+        
+        
+    def search_product(self):
+        code = self.search_bar_entry.get()
+        product = self.controller.product_by_code(code)
+        print(product)
+        
+        self.list_products.delete(0, END)
+        self.list_products.insert(END, f'{product[0][1]}/{product[0][0]}')
 
-    
+ 
     def show_infos(self,list, frame):
         self.clear_screen(frame)
 
         product = self.search_product_code(list=list)
+        if product is None:
+            return
 
         if product is None:
             self.delete_screen()
@@ -386,4 +403,24 @@ class View:
         self.image_label = Label(frame, image=product_image, width=250, height=200)
         self.image_label.image = product_image # Mantendo referência para evitar a coleta de lixo
         self.image_label.place(x=x, y=y)
-        
+
+    
+    def delete_product(self):
+        code = self.search_product_code(self.list_products)
+        if code is None:
+            return
+        else:
+            response = messagebox.askyesno("Confirmar Deleção", "Tem certeza que deseja deletar o produto?")
+            self.controller.delete_product_database(response = response, code = code[0][0])
+    
+
+    def clear_fields(self):
+        self.entry_code_product.delete(0, END)
+        self.entry_name_product.delete(0, END)
+        self.entry_price_product.delete(0, END)
+        self.entry_stock_product.delete(0, END)
+        try:
+            self.image_label.destroy()
+
+        except AttributeError:
+            pass
