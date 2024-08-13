@@ -107,6 +107,12 @@ class View:
         self.list_products.place(x=2, y=0)
         self.update(list=self.list_products)
 
+        self.search_bar_entry = Entry(self.frame_product_right, width=30, font=('Arial 13'), justify='left', relief='raised', borderwidth=2)
+        self.search_bar_entry.place(x=5, y=5)
+
+
+        search_bar_button = Button(self.frame_product_right, text='Buscar produto', width=10, height=1, pady=3, anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#D3D3D3', fg='black', borderwidth=2, command=self.search_product)
+        search_bar_button.place(x=15, y=35)
 
         show_product_button = Button(self.frame_product_right, text='Exibir produto', width=15, height=1, pady=5, anchor='center', font=(
         'Ivy 10 '), relief='raised', overrelief='sunken', bg='#007bff', fg='black', borderwidth=2, command=lambda: self.show_infos(list=self.list_products, frame=self.frame_product_right))
@@ -120,11 +126,23 @@ class View:
         'Ivy 10 '), relief='raised', overrelief='sunken', bg='#fa2d4c', fg='black', borderwidth=2, command=self.delete_product)
         delete_product_button.place(x=339, y= 217)
 
+    def search_product(self):
+        code = self.search_bar_entry.get()
+        product = self.controller.product_by_code(code)
+        print(product)
+        
+        self.list_products.delete(0, END)
+        self.list_products.insert(END, f'{product[0][1]}/{product[0][0]}')
+
+        
+
 
     def show_infos(self,list, frame):
         self.clear_screen(frame)
 
         product = self.search_product_code(list=list)
+        if product is None:
+            return
 
         
         back_button = Button(frame, text='Limpar informações', width=15, height=1, pady=5, anchor='center', font=(
@@ -345,9 +363,11 @@ class View:
     
     def delete_product(self):
         code = self.search_product_code(self.list_products)
-        
-        response = messagebox.askyesno("Confirmar Deleção", "Tem certeza que deseja deletar o produto?")
-        self.controller.delete_product_database(response = response, code = code[0][0])
+        if code is None:
+            return
+        else:
+            response = messagebox.askyesno("Confirmar Deleção", "Tem certeza que deseja deletar o produto?")
+            self.controller.delete_product_database(response = response, code = code[0][0])
         
 
 
