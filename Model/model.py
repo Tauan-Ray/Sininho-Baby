@@ -133,3 +133,18 @@ class ProductModel:
 
 
         return product_by_code
+    
+
+    def update_stock(self, new_stock, product_code):
+        sql = 'update products set stock = %(new_stock)s WHERE product_code = %(product_code)s'
+
+        data = {
+            "new_stock": new_stock,
+            "product_code": product_code
+        }
+
+        with self.mydb.cursor() as cursor:
+            cursor.execute(sql, data)
+            self.mydb.commit()
+
+

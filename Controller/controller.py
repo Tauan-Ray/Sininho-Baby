@@ -20,6 +20,11 @@ class Controller():
     def product_by_code(self, code):
         return self.model.search_product_by_code(code)
     
+    
+    def update_stock_database(self, new_stock, product_code):
+        return self.model.update_stock(new_stock, product_code)
+
+    
 
     def register_product_database(self, product_code, product_name, price_product, stock_product, image_product=None):
         try:

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog as fd, messagebox
 from PIL import Image, ImageTk
+from re import match
 from Controller.controller import Controller
 from Model.model import ProductModel
 class View:
@@ -36,7 +37,7 @@ class View:
         
 
         button_purchase = Button(menu_frame, text='Compras', width=15, height=2, anchor='center', font=(
-            'Ivy 9 bold'), relief='raised', overrelief='sunken', bg='white', fg='black', borderwidth=2)
+            'Ivy 9 bold'), relief='raised', overrelief='sunken', bg='white', fg='black', borderwidth=2, command= self.screen_purchase)
         button_purchase.place(x=317, y=2)
 
         button_create_pdf_profit = Button(menu_frame, text='Lucro Geral', width=15, height=2, anchor='center', font=(
@@ -59,7 +60,10 @@ class View:
         list.delete(0, END)
         products = self.controller.list_products()
         for item in products:
-            list.insert(END, f'{item[1]}/{item[0]}')
+            if item[4] == 0:
+                pass
+            else:
+                list.insert(END, f'{item[1]}/{item[0]}')
 
         if screen_product:
             list.delete(0, END)
@@ -69,7 +73,7 @@ class View:
 
                 else:
                     messagebox.showwarning('Aviso!!!',
-                                        f'O produto {item[1]} está sem estoque.')
+                                        f'O produto {item[1]}/{item[0]} está sem estoque.')
                     
     
     def search_product_code(self, list):
@@ -121,7 +125,7 @@ class View:
 
 
         self.list_products = Listbox(frame_product_left, font=(
-            'Courier 13'), width=49, height=28, bg='white', fg='black')
+            'Courier 13'), width=49, height=26, bg='white', fg='black')
         self.list_products.place(x=2, y=0)
         self.update(list=self.list_products, screen_product=True)
 
@@ -147,11 +151,25 @@ class View:
         
     def search_product(self):
         code = self.search_bar_entry.get()
-        product = self.controller.product_by_code(code)
-        print(product)
-        
-        self.list_products.delete(0, END)
-        self.list_products.insert(END, f'{product[0][1]}/{product[0][0]}')
+
+        if code == "":
+            self.show_error("Insira o código de algum produto.")
+
+        elif bool(match(r"^\d+$", code)):
+            product = self.controller.product_by_code(code)
+
+            try:
+                self.list_products.delete(0, END)
+                self.list_products.insert(END, f'{product[0][1]}/{product[0][0]}')
+
+            except IndexError:
+                self.show_error("Produto não encontrado.")
+                self.update(list=self.list_products, screen_product=True)
+
+
+        else:
+            self.show_error("Insira apenas números.")
+            return
 
  
     def show_infos(self,list, frame):
@@ -307,8 +325,6 @@ class View:
 
         self.update(self.list_products)
 
-        self.screen_products()
-
 
     def delete_product(self):
         code = self.search_product_code(self.list_products)
@@ -332,24 +348,27 @@ class View:
 
         self.create_product_components(frame_register_left)
 
-        self.list_products_register = Listbox(frame_register_right, font=('Courier 13'), width=49, height=28, bg='white', fg='black')
+        self.list_products_register = Listbox(frame_register_right, font=('Courier 13'), width=49, height=26, bg='white', fg='black')
         self.list_products_register.place(x=2, y=0)
         self.update(list=self.list_products_register)
 
     
     def register_product(self):
         product_data = self.get_product_data()
-
-        self.controller.register_product_database(
-            product_code=product_data['product_code'],
-            product_name=product_data['product_name'],
-            price_product=product_data['price_product'],
-            stock_product=product_data['stock_product'],
-            image_product=product_data['image_product']
-        )
-
-        self.update(self.list_products_register)
-
+        
+        try:
+            self.controller.register_product_database(
+                product_code=product_data['product_code'],
+                product_name=product_data['product_name'],
+                price_product=product_data['price_product'],
+                stock_product=product_data['stock_product'],
+                image_product=product_data['image_product']
+            )
+        except TypeError:
+            pass
+        
+        else:
+            self.update(self.list_products_register)
 
     
     def get_product_data(self):
@@ -371,8 +390,49 @@ class View:
             'price_product': price_product,
             'stock_product': stock_product,
             'image_product': image_product
-        } 
+        }
     
+
+    def screen_purchase(self):
+        self.delete_screen()
+        frame_purchase_left = Frame(self.frame_main, width=500, height=600, bg='white', relief='raised', borderwidth=1)
+        frame_purchase_left.place(x=0,y=0)
+
+        frame_purchase_right = Frame(self.frame_main, width=500, height=600, bg='white', relief='raised', borderwidth=1)
+        frame_purchase_right.place(x=500, y=0)
+
+        self.list_purchase = Listbox(frame_purchase_left, font=(
+            'Courier 13'), width=33, height=26, bg='white', fg='black')
+        self.list_purchase.place(x=2, y=0)
+        self.update(list=self.list_purchase)
+
+
+        button_add_to_cart = Button(frame_purchase_left, text='Adicionar ao carrinho', width=14, height=1, pady=6, padx=15 ,anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#FFA500', fg='black', borderwidth=2, command= self.add_to_car)
+        button_add_to_cart.place(x=343, y=260)
+
+        button_create_invoice = Button(frame_purchase_right, text='Gerar nota fiscal', width=14, height=1, pady=6, padx=15 ,anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#ADD8E6', fg='black', borderwidth=2, command= self.add_to_car)
+        button_create_invoice.place(x=343, y=260)
+
+
+        self.list_car = Listbox(frame_purchase_right, font=(
+            'Courier 13'), width=33, height=26, bg='white', fg='black')
+        self.list_car.place(x=0, y=0)
+
+
+    
+    def add_to_car(self):
+        products = self.search_product_code(self.list_purchase)
+        if products[0][4] > 0:
+            self.list_car.insert(END, products[0][1])
+            new_stock = products[0][4] - 1
+            self.controller.update_stock_database(new_stock=new_stock, product_code=products[0][0])
+
+        else:
+            selected_index = self.list_purchase.curselection()
+            if selected_index:
+                self.list_purchase.delete(selected_index)
+
+
 
     def choice_image(self,frame):
         try:
@@ -403,15 +463,6 @@ class View:
         self.image_label = Label(frame, image=product_image, width=250, height=200)
         self.image_label.image = product_image # Mantendo referência para evitar a coleta de lixo
         self.image_label.place(x=x, y=y)
-
-    
-    def delete_product(self):
-        code = self.search_product_code(self.list_products)
-        if code is None:
-            return
-        else:
-            response = messagebox.askyesno("Confirmar Deleção", "Tem certeza que deseja deletar o produto?")
-            self.controller.delete_product_database(response = response, code = code[0][0])
     
 
     def clear_fields(self):
