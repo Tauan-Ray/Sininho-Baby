@@ -395,6 +395,8 @@ class View:
 
     def screen_purchase(self):
         self.delete_screen()
+        self.total_price = 0.0
+
         frame_purchase_left = Frame(self.frame_main, width=500, height=600, bg='white', relief='raised', borderwidth=1)
         frame_purchase_left.place(x=0,y=0)
 
@@ -407,31 +409,24 @@ class View:
         self.update(list=self.list_purchase)
 
 
-        button_add_to_cart = Button(frame_purchase_left, text='Adicionar ao carrinho', width=14, height=1, pady=6, padx=15 ,anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#FFA500', fg='black', borderwidth=2, command= self.add_to_car)
+        button_add_to_cart = Button(frame_purchase_left, text='Adicionar ao carrinho', width=14, height=1, pady=6, padx=15 ,anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#FFA500', fg='black', borderwidth=2, command= lambda: self.controller.add_to_car(self.list_purchase, self.list_car, self.show_total_price_label))
         button_add_to_cart.place(x=343, y=260)
 
-        button_create_invoice = Button(frame_purchase_right, text='Gerar nota fiscal', width=14, height=1, pady=6, padx=15 ,anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#ADD8E6', fg='black', borderwidth=2, command= self.add_to_car)
+        button_create_invoice = Button(frame_purchase_right, text='Gerar nota fiscal', width=14, height=1, pady=6, padx=15 ,anchor='center', font=('Ivy 10'), relief='raised', overrelief='sunken', bg='#ADD8E6', fg='black', borderwidth=2, command= lambda: self.controller.create_invoice(self.list_car))
         button_create_invoice.place(x=343, y=260)
+
+
+        total_price_label = Label(frame_purchase_right, text='Preço total:',width=15, height=1, padx=2, anchor=CENTER, font=('Arial 13'), bg='white', fg='black')
+        total_price_label.place(x=320, y=330)
+        
+
+        self.show_total_price_label = Label(frame_purchase_right, text='',width=15, height=1, padx=2, anchor=CENTER, font=('Arial 13'), bg='white', fg='black')
+        self.show_total_price_label.place(x=343, y=354)
 
 
         self.list_car = Listbox(frame_purchase_right, font=(
             'Courier 13'), width=33, height=26, bg='white', fg='black')
         self.list_car.place(x=0, y=0)
-
-
-    
-    def add_to_car(self):
-        products = self.search_product_code(self.list_purchase)
-        if products[0][4] > 0:
-            self.list_car.insert(END, products[0][1])
-            new_stock = products[0][4] - 1
-            self.controller.update_stock_database(new_stock=new_stock, product_code=products[0][0])
-
-        else:
-            selected_index = self.list_purchase.curselection()
-            if selected_index:
-                self.list_purchase.delete(selected_index)
-
 
 
     def choice_image(self,frame):
